@@ -96,10 +96,10 @@ public class NBody {
     }
 
     // print final state of the universe after end of simulation
-    Stdout.printf("%d\n", planets.length);
-    Stdout.printf("%.2e\n", radius);
+    StdOut.printf("%d\n", planets.length);
+    StdOut.printf("%.2e\n", radius);
     for (Planet p : planets) {
-      Stdout.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n",
+      StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n",
                     p.xxPos, p.yyPos, p.xxVel, p.yyVel, p.mass, 
                     p.imgFileName);
     }
