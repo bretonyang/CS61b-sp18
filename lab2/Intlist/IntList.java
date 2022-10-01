@@ -74,24 +74,18 @@ public class IntList {
 
     /** DO NOT MODIFY ANYTHING ABOVE THIS LINE! */
 
-
     /**
      * Returns a list consisting of the elements of A followed by the
      * elements of B.  May modify items of A. Don't use 'new'.
      */
     public static IntList dcatenate(IntList A, IntList B) {
         //TODO:  fill in method
-        // Using iteration
+        // Using Recursion
         if (A == null) {
             return B;
         }
 
-        IntList tmp = A;
-        while (tmp.rest != null) {
-            tmp = tmp.rest;
-        }
-        tmp.rest = B;
-
+        A.rest = dcatenate(A.rest, B);
         return A;
     }
 
@@ -101,39 +95,86 @@ public class IntList {
      */
     public static IntList catenate(IntList A, IntList B) {
         //TODO:  fill in method
-        // Using iteration
+        // Using Recursion
         if (A == null) {
-            if (B == null) {
+            if (B != null) {
+            return catenate(B, null);
+            } else {
                 return null;
             }
-            return catenate(B, null);
         }
 
-        IntList ptr = new IntList(A.first, null);
-        IntList res = ptr;
-        while (A.rest != null) {
-            ptr.rest = new IntList(A.rest.first, null);
-            ptr = ptr.rest;
-            A = A.rest;
-        }
-        ptr.first = A.first;
-
-        if (B == null) {
-            return res;
-        }
-
-        ptr.rest = new IntList(B.first, null);
-        ptr = ptr.rest;
-
-        while (B.rest != null) {
-            ptr.rest = new IntList(B.rest.first, null);
-            ptr = ptr.rest;
-            B = B.rest;
-        }
-        ptr.first = B.first;
-
-        return res;
+        return new IntList(A.first, catenate(A.rest, B));
     }
+
+
+
+    /** BELOW ARE ITERATIVE VERSION OF dcatenate() and catenate() */
+
+    /**
+     * Returns a list consisting of the elements of A followed by the
+     * elements of B.  May modify items of A. Don't use 'new'.
+     */
+//    public static IntList dcatenate(IntList A, IntList B) {
+//        //TODO:  fill in method
+//        // Using iteration
+//        if (A == null) {
+//            return B;
+//        }
+//
+//        IntList tmp = A;
+//        while (tmp.rest != null) {
+//            tmp = tmp.rest;
+//        }
+//        tmp.rest = B;
+//
+//        return A;
+//    }
+
+    /**
+     * Returns a list consisting of the elements of A followed by the
+     * elements of B.  May NOT modify items of A.  Use 'new'.
+     */
+//    public static IntList catenate(IntList A, IntList B) {
+//        //TODO:  fill in method
+//        // Using iteration
+//        if (A == null) {
+//            if (B == null) {
+//                return null;
+//            }
+//            return catenate(B, null);
+//        }
+//
+//        IntList ptr = new IntList(A.first, null);
+//        IntList res = ptr;
+//        while (A.rest != null) {
+//            ptr.rest = new IntList(A.rest.first, null);
+//            ptr = ptr.rest;
+//            A = A.rest;
+//        }
+//        ptr.first = A.first;
+//
+//        if (B == null) {
+//            return res;
+//        }
+//
+//        ptr.rest = new IntList(B.first, null);
+//        ptr = ptr.rest;
+//
+//        while (B.rest != null) {
+//            ptr.rest = new IntList(B.rest.first, null);
+//            ptr = ptr.rest;
+//            B = B.rest;
+//        }
+//        ptr.first = B.first;
+//
+//        return res;
+//    }
+
+    /** ABOVE ARE ITERATIVE VERSION OF dcatenate() and catenate() */
+
+
+
 
 
 
