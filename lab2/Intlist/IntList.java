@@ -116,7 +116,6 @@ public class IntList {
             ptr = ptr.rest;
             A = A.rest;
         }
-
         ptr.first = A.first;
 
         if (B == null) {
