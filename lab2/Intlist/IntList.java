@@ -83,7 +83,7 @@ public class IntList {
         //TODO:  fill in method
         // Using iteration
         if (A == null) {
-            return B;
+            return null;
         }
 
         IntList tmp = A;
@@ -103,7 +103,7 @@ public class IntList {
         //TODO:  fill in method
         // Using iteration
         if (A == null) {
-            return catenate(B, null);
+            return null;
         }
 
         IntList ptr = new IntList(A.first, null);
