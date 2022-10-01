@@ -79,7 +79,7 @@ public class IntList {
      * elements of B.  May modify items of A. Don't use 'new'.
      */
     public static IntList dcatenate(IntList A, IntList B) {
-        //TODO:  fill in method
+        //TODO: fill in method
         // Using Recursion
         if (A == null) {
             return B;
@@ -94,11 +94,11 @@ public class IntList {
      * elements of B.  May NOT modify items of A.  Use 'new'.
      */
     public static IntList catenate(IntList A, IntList B) {
-        //TODO:  fill in method
+        //TODO: fill in method
         // Using Recursion
         if (A == null) {
             if (B != null) {
-            return catenate(B, null);
+                return catenate(B, null);
             } else {
                 return null;
             }
@@ -116,7 +116,7 @@ public class IntList {
      * elements of B.  May modify items of A. Don't use 'new'.
      */
 //    public static IntList dcatenate(IntList A, IntList B) {
-//        //TODO:  fill in method
+//        //TODO: fill in method
 //        // Using iteration
 //        if (A == null) {
 //            return B;
@@ -136,7 +136,7 @@ public class IntList {
      * elements of B.  May NOT modify items of A.  Use 'new'.
      */
 //    public static IntList catenate(IntList A, IntList B) {
-//        //TODO:  fill in method
+//        //TODO: fill in method
 //        // Using iteration
 //        if (A == null) {
 //            if (B == null) {
