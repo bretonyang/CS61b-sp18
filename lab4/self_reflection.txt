@@ -4,27 +4,27 @@ ArrayDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A:  I don't have access to staff solution QQ.
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: All methods are within 10 lines of code. And I actually spent a great amount of time refactoring them to get to this point.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: The "printDeque()" method seems a bit ugly.
 
 Q: What did you learn by talking to your partner about writing ArrayDeque?
 
-A:
+A: I'm studying alone...
 
 Q: What do you wish you would have known before writing ArrayDeque, if anything?
 
-A:
+A: Some hints of what the invariants might be or maybe some thoughts.
 
 Q: If you wrote ArrayDeque again, what would you do differently, if anything?
 
-A:
+A: Refactor the resize() and the code to check for resize() necessity in remove() and add() related methods.
 
 -----
 
@@ -32,27 +32,27 @@ LinkedListDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A: QQ.
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: All methods are quite short and no hacky trick is used, which makes it more readable and maintainable.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: The get() method.
 
 Q: What did you learn by talking to your partner about writing LinkedListDeque?
 
-A:
+A: QQ.
 
 Q: What do you wish you would have known before writing LinkedListDeque, if anything?
 
-A:
+A: Whether some methods are more elegant in recursion or iteration.
 
 Q: If you wrote LinkedListDeque again, what would you do differently, if anything?
 
-A:
+A: Make the get() method actually use the advantage of the double ended queue characteristic, i.e., start getting the item depending on whether the given index if closer to the end or beginning.
 
 -----
 
@@ -60,4 +60,4 @@ Meta:
 
 Q: Did you like this design review process? Anything we should do differently next time?
 
-A: 
+A: Maybe consider making the magic word public after the semester.
