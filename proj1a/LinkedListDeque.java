@@ -1,10 +1,10 @@
 public class LinkedListDeque<T> {
 
     private class Node {
-        public T item;
-        public Node prev;
-        public Node next;
-        public Node(T item, Node prev, Node next) {
+        T item;
+        Node prev;
+        Node next;
+        Node(T item, Node prev, Node next) {
             this.item = item;
             this.prev = prev;
             this.next = next;
@@ -22,18 +22,6 @@ public class LinkedListDeque<T> {
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
-    }
-
-    /**
-     * Constructor for linked list deque with one item.
-     * @param item The value of the item.
-     */
-    public LinkedListDeque(T item) {
-        sentinel = new Node(null, null, null);
-        Node newNode = new Node(item, sentinel, sentinel);
-        sentinel.next = newNode;
-        sentinel.prev = newNode;
-        size = 1;
     }
 
     /**
@@ -80,7 +68,7 @@ public class LinkedListDeque<T> {
      */
     public void printDeque() {
         Node ptr = sentinel;
-        while(ptr.next != sentinel) {
+        while (ptr.next != sentinel) {
             System.out.print(ptr.next.item + " ");
             ptr = ptr.next;
         }
@@ -122,7 +110,8 @@ public class LinkedListDeque<T> {
     }
 
     /**
-     * Gets the item at the given index using iteration, where 0 is the front, 1 is the next item, and so forth.
+     * Gets the item at the given index using iteration, where 0 is the front,
+     * 1 is the next item, and so forth.
      * If no such item exists (if index >= size or index < 0), returns null.
      * Must not alter the deque!
      * @param index Index of the item in the deque, starts with 0.
@@ -143,7 +132,8 @@ public class LinkedListDeque<T> {
     }
 
     /**
-     * Gets the item at the given index using recursion, where 0 is the front, 1 is the next item, and so forth.
+     * Gets the item at the given index using recursion, where 0 is the front,
+     * 1 is the next item, and so forth.
      * If no such item exists (if index >= size or index < 0), returns null.
      * Must not alter the deque!
      * @param index Index of the desired item in the deque, starts with 0.

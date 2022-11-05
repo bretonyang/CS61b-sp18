@@ -29,7 +29,7 @@ public class ArrayDeque<T> {
 
         size++;
         items[nextFirst] = item;
-        nextFirst = prevIndex(nextFirst);
+        nextFirst = minusOne(nextFirst);
     }
 
     /**
@@ -43,7 +43,7 @@ public class ArrayDeque<T> {
 
         size++;
         items[nextLast] = item;
-        nextLast = nextIndex(nextLast);
+        nextLast = plusOne(nextLast);
     }
 
     /**
@@ -67,11 +67,11 @@ public class ArrayDeque<T> {
      * separated by a space.
      */
     public void printDeque() {
-        int curIdx = nextIndex(nextFirst);
+        int curIdx = plusOne(nextFirst);
         int count = size;
         while (count > 0) {
             System.out.print(items[curIdx] + " ");
-            curIdx = nextIndex(curIdx);
+            curIdx = plusOne(curIdx);
             count--;
         }
         System.out.println();
@@ -88,7 +88,7 @@ public class ArrayDeque<T> {
         }
 
         size--;
-        nextFirst = nextIndex(nextFirst);
+        nextFirst = plusOne(nextFirst);
         T removedItem = items[nextFirst];
         items[nextFirst] = null;
 
@@ -110,7 +110,7 @@ public class ArrayDeque<T> {
         }
 
         size--;
-        nextLast = prevIndex(nextLast);
+        nextLast = minusOne(nextLast);
         T removedItem = items[nextLast];
         items[nextLast] = null;
 
@@ -122,7 +122,8 @@ public class ArrayDeque<T> {
     }
 
     /**
-     * Gets the item at the given index using iteration, where 0 is the front, 1 is the next item, and so forth.
+     * Gets the item at the given index using iteration, where 0 is the front,
+     * 1 is the next item, and so forth.
      * If no such item exists (if index >= size or index < 0), returns null.
      * Must not alter the deque!
      * @param index Index of the item in the deque, starts with 0.
@@ -133,7 +134,7 @@ public class ArrayDeque<T> {
             return null;
         }
 
-        index = nextIndex(nextFirst + index);
+        index = plusOne(nextFirst + index);
         return items[index];
     }
 
@@ -145,9 +146,9 @@ public class ArrayDeque<T> {
         T[] newItems = (T[]) new Object[capacity];
 
         // Copy elements in items[] to newItems[]
-        for (int i = 0, curIdx = nextIndex(nextFirst); i < size; i++) {
+        for (int i = 0, curIdx = plusOne(nextFirst); i < size; i++) {
             newItems[i] = items[curIdx];
-            curIdx = nextIndex(curIdx);
+            curIdx = plusOne(curIdx);
         }
 
         items = newItems;
@@ -160,20 +161,20 @@ public class ArrayDeque<T> {
     }
 
     /**
-     * Private helper method for calculating next index in the deque.
+     * Private helper method for calculating the index after idx.
      * @param idx The current index.
      * @return Index of the next index of idx.
      */
-    private int nextIndex(int idx) {
+    private int plusOne(int idx) {
         return (idx + 1) % items.length;
     }
 
     /**
-     * Private helper method for calculating previous index in the deque.
+     * Private helper method for calculating the index before idx.
      * @param idx The current index
      * @return Index of the previous index of idx.
      */
-    private int prevIndex(int idx) {
+    private int minusOne(int idx) {
         return (items.length + idx - 1) % items.length;
     }
 
