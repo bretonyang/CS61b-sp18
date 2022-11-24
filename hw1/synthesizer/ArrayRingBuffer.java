@@ -32,7 +32,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         private int curIndex;
         private int seenItems;
 
-        public ArrayRingBufferIterator() {
+        ArrayRingBufferIterator() {
             curIndex = first;
             seenItems = 0;
         }

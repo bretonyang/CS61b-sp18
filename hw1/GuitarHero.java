@@ -5,7 +5,7 @@
 import synthesizer.GuitarString;
 
 public class GuitarHero {
-    private static final String keyboard = "q2we4r5ty7u8i9op-[=zxdcfvgbnjmk,.;/' ";
+    private static String keyboard = "q2we4r5ty7u8i9op-[=zxdcfvgbnjmk,.;/' ";
     private static final int KEYS = 37;
 
     public static void main(String[] args) {
