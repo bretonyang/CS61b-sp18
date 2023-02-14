@@ -15,7 +15,6 @@ public class SimpleOomage implements Oomage {
 
     @Override
     public boolean equals(Object o) {
-        // TODO: Write this method.
         if (this == o) {
             return true;
         }
@@ -38,7 +37,6 @@ public class SimpleOomage implements Oomage {
         if (!USE_PERFECT_HASH) {
             return red + green + blue;
         } else {
-            // TODO: Write a perfect hash function for Simple Oomages.
             // Since RGB spans from 0 ~ 255, where each are multiple of 5.
             // If we divide each value by 5, we get 0 ~ 51.
             // We can treat each obj as base 52 number with RGB (divide by 5) as their digits.
