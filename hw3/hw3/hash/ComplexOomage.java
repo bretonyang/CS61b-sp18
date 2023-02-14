@@ -6,6 +6,7 @@ import java.awt.Color;
 import edu.princeton.cs.algs4.StdRandom;
 
 public class ComplexOomage implements Oomage {
+    // Each integer in the list is in [0, 255].
     protected List<Integer> params;
     private static final double WIDTH = 0.05;
 
