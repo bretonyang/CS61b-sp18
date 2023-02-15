@@ -13,12 +13,18 @@ public class OomageTestUtility {
          * Oomages and no bucket has more than N / 2.5 Oomages.
          */
         int[] buckets = new int[M];
+
+        // Record number of oomages in each bucket
         for (Oomage oomage : oomages) {
+            // integer & 0x7fffffff sets the sign bit of integer to 0
             int bucketNum = (oomage.hashCode() & 0x7fffffff) % M;
             buckets[bucketNum]++;
         }
+
+        // Check bucket sizes are uniformly spread.
         for (int i = 0; i < M; i++) {
             int N = oomages.size();
+            // i.e. size <= N/50 or size >= N/2.5
             if ((50 * buckets[i] <= N) || (5 * buckets[i] >= 2 * N)) {
                 return false;
             }

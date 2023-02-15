@@ -1,6 +1,8 @@
 package hw3.hash;
 
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,25 +42,35 @@ public class TestComplexOomage {
     public void testWithDeadlyParams() {
         List<Oomage> deadlyList = new ArrayList<>();
 
-        // Your code here.
-        int N = 200;
+        // My code
+        int N = 500;
         int numItemsOfList = 4;
         for (int i = 0; i < N; i++) {
             List<Integer> list = new ArrayList<>(numItemsOfList);
-            for (int j = 0; j < numItemsOfList; j++) {
-//                list.add(StdRandom.uniform(0, 128) * 2); // some even int in [0, 256)
-                list.add(255);
+
+            // fill in until last 4 items
+            int j = 0;
+            for (; j < numItemsOfList - 4; j++) {
+                list.add(StdRandom.uniform(0, 256));
             }
+            // fill in last 4 items with the same value.
+            for (; j < numItemsOfList; j++) {
+                list.add(69);
+            }
+
+            ComplexOomage oomage = new ComplexOomage(list);
+            deadlyList.add(oomage);
             numItemsOfList++;
-            deadlyList.add(new ComplexOomage(list));
-//            System.out.println(new ComplexOomage(list).hashCode());
+//            System.out.println(oomage.hashCode());
         }
 
-//        HashTableVisualizer.visualize(deadlyList, 10, 1);
+//        HashTableVisualizer.visualize(deadlyList, 255, 0.5);
         assertTrue(OomageTestUtility.haveNiceHashCodeSpread(deadlyList, 10));
     }
 
-    /** Calls tests for SimpleOomage. */
+    /**
+     * Calls tests for SimpleOomage.
+     */
     public static void main(String[] args) {
         jh61b.junit.textui.runClasses(TestComplexOomage.class);
     }

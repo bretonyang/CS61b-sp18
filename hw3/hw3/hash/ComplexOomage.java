@@ -1,8 +1,12 @@
 package hw3.hash;
+
 import java.util.List;
 import java.util.ArrayList;
+
 import edu.princeton.cs.algs4.StdDraw;
+
 import java.awt.Color;
+
 import edu.princeton.cs.algs4.StdRandom;
 
 public class ComplexOomage implements Oomage {
@@ -12,6 +16,16 @@ public class ComplexOomage implements Oomage {
 
     @Override
     public int hashCode() {
+        /*
+            Problem: 256 in binary is 1 0000 0000
+            -> `total * 256` is the same as `total << 8`
+            -> `total = total + x` basically fills the first 8 bits for `total`
+               with the bits from x (since x in [0, 255] is at most 8 bits)
+            -> each itration we're basically recording x's first 8 bits into `total`'s
+               first 8 bits.
+            -> therefore if the last 4 integers in the list is the same, then `total`
+               will have the same bit patterns, resulting in the same value.
+        */
         int total = 0;
         for (int x : params) {
             total = total * 256;
@@ -22,7 +36,10 @@ public class ComplexOomage implements Oomage {
 
     @Override
     public boolean equals(Object o) {
-        if (o.getClass() != this.getClass()) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || o.getClass() != this.getClass()) {
             return false;
         }
         ComplexOomage otherComplexOomage = (ComplexOomage) o;
@@ -31,7 +48,7 @@ public class ComplexOomage implements Oomage {
 
     public ComplexOomage(List<Integer> params) {
         if (params == null) {
-            throw new IllegalArgumentException("params must not be null!");            
+            throw new IllegalArgumentException("params must not be null!");
         }
 
         for (Integer x : params) {
@@ -72,6 +89,10 @@ public class ComplexOomage implements Oomage {
         }
     }
 
+    /**
+     * Returns a ComplexOomage with a list of length 1~10,
+     * and random generated integers in [0, 255].
+     */
     public static ComplexOomage randomComplexOomage() {
         int N = StdRandom.uniform(1, 10);
         ArrayList<Integer> params = new ArrayList<>(N);

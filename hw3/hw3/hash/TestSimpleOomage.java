@@ -15,6 +15,7 @@ public class TestSimpleOomage {
 
     @Test
     public void testHashCodeDeterministic() {
+        // Tests the hashCode is the same no matter how many times we try
         SimpleOomage so = SimpleOomage.randomSimpleOomage();
         int hashCode = so.hashCode();
         for (int i = 0; i < 100; i += 1) {
@@ -38,6 +39,7 @@ public class TestSimpleOomage {
                 }
             }
         }
+        // Checks all hashCodes are unique
         assertEquals(counter, hashCodeSet.size());
     }
 
@@ -59,6 +61,7 @@ public class TestSimpleOomage {
         SimpleOomage ooA2 = new SimpleOomage(5, 10, 20);
         HashSet<SimpleOomage> hashSet = new HashSet<>();
         hashSet.add(ooA);
+        // Checks they have the same hashCode, and are equal
         assertTrue(hashSet.contains(ooA2));
     }
 
@@ -72,6 +75,7 @@ public class TestSimpleOomage {
         }
 
         assertTrue(OomageTestUtility.haveNiceHashCodeSpread(oomages, 10));
+//        assertTrue(OomageTestUtility.haveNiceHashCodeSpread(oomages, 52));
     }
 
     /** Calls tests for SimpleOomage. */
