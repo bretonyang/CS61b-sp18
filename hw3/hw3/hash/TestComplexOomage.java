@@ -61,6 +61,8 @@ public class TestComplexOomage {
             ComplexOomage oomage = new ComplexOomage(list);
             deadlyList.add(oomage);
             numItemsOfList++;
+            // NOTE: As long as the last 4 items in the params list of oomage is the same
+            // oomage.hashCode() is the same (see notes in ComplexOomage.hashCode)
 //            System.out.println(oomage.hashCode());
         }
 
