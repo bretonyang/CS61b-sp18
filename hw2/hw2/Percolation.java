@@ -57,15 +57,19 @@ public class Percolation {
         for (int idx = 0; idx < 4; idx++) {
             int neighborRow = row + dr[idx];
             int neighborCol = col + dc[idx];
-            if (!outOfRange(neighborRow, neighborCol) && openStatusOfSites[neighborRow][neighborCol]) {
+            if (!outOfRange(neighborRow, neighborCol)
+                    && openStatusOfSites[neighborRow][neighborCol]) {
                 WQU.union(index(row, col), index(neighborRow, neighborCol));
             }
         }
 
-        // Connect to topSentinel if a top site is opened. Same for bottom site.
+        // Connect to topSentinel if a top site is opened.
         if (row == 0) {
             WQU.union(topSentinel, index(row, col));
-        } else if (row == gridSize - 1) {
+        }
+        // Connect to bottomSentinel if a bottom site is opened.
+        // Note: use if here for the edge case N = 1.
+        if (row == gridSize - 1) {
             WQU.union(bottomSentinel, index(row, col));
         }
     }
