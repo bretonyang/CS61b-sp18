@@ -4,10 +4,10 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- *  A hash table-backed Map implementation. Provides amortized constant time
- *  access to elements via get(), remove(), and put() in the best case.
+ * A hash table-backed Map implementation. Provides amortized constant time
+ * access to elements via get(), remove(), and put() in the best case.
  *
- *  @author Your name here
+ * @author Your name here
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
 
@@ -26,6 +26,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         this.clear();
     }
 
+    public MyHashMap(int initialSize) {
+        buckets = new ArrayMap[initialSize];
+        this.clear();
+    }
+
     /* Removes all of the mappings from this map. */
     @Override
     public void clear() {
@@ -35,9 +40,10 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         }
     }
 
-    /** Computes the hash function of the given key. Consists of
-     *  computing the hashcode, followed by modding by the number of buckets.
-     *  To handle negative numbers properly, uses floorMod instead of %.
+    /**
+     * Computes the hash function of the given key. Consists of
+     * computing the hashcode, followed by modding by the number of buckets.
+     * To handle negative numbers properly, uses floorMod instead of %.
      */
     private int hash(K key) {
         if (key == null) {
@@ -53,19 +59,50 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            return null;
+        }
+        return buckets[hash(key)].get(key);
     }
 
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("Null keys are not allowed.");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Null values are not allowed.");
+        }
+
+        if (loadFactor() >= MAX_LF) {
+            resize(size * 2);
+        }
+        int bucketNum = hash(key);
+        size -= buckets[bucketNum].size();
+        buckets[bucketNum].put(key, value);
+        size += buckets[bucketNum].size();
+    }
+
+    private void resize(int capacity) {
+        ArrayMap<K, V>[] newBuckets = new ArrayMap[capacity];
+        for (int i = 0; i < newBuckets.length; i++) {
+            newBuckets[i] = new ArrayMap<>();
+        }
+        for (ArrayMap<K, V> bucket : buckets) {
+            for (K key : bucket) {
+                int newBucketNum = Math.floorMod(key.hashCode(), capacity);
+                V value = bucket.get(key);
+                newBuckets[newBucketNum].put(key, value);
+            }
+        }
+        buckets = newBuckets;
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     }
 
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////
