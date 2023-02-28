@@ -118,6 +118,45 @@ public class TestBSTMap {
         assertEquals(2, map.size());
     }
 
+    @Test
+    public void removeThreeCasesTest() {
+        BSTMap<String, Integer> map = new BSTMap<>();
+
+        map.put("E", 1);
+        map.put("C", 2);
+        map.put("D", 3);
+        map.put("A", 4);
+        map.put("B", 5);
+        map.put("H", 6);
+        map.put("J", 7);
+        map.put("I", 8);
+        map.put("K", 9);
+
+        // case1: 0 child
+        assertEquals(3, map.remove("D").intValue());
+        assertEquals(8, map.size());
+        assertFalse(map.containsKey("D"));
+
+        // case2: 1 child
+
+        // case3: 2 children
+    }
+
+    @Test
+    public void removeRootEdgeTest() {
+        BSTMap<String, Integer> map = new BSTMap<>();
+        assertNull(map.remove("a"));
+        assertNull(map.remove("a", 20));
+
+        map.put("b", 20);
+        map.put("a", 10);
+        map.put("c", 30);
+        assertEquals(20, map.remove("b").intValue());
+        assertFalse(map.containsKey("b"));
+        assertEquals(2, map.size());
+        assertEquals(null, map.get("b"));
+    }
+
     // assumes put work
     @Test
     public void sanityKeySetTest() {

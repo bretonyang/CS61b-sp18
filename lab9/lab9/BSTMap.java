@@ -189,20 +189,19 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         } else if (comparison > 0) {
             rootNode = deleteKeyHelper(key, rootNode.right);
         } else {
-            if (rootNode.left != null && rootNode.right != null) {
-                // 2 children
-                Node maxNode = findMax(rootNode.left);
-                rootNode.key = maxNode.key;
-                rootNode.value = maxNode.value;
-                rootNode.left = deleteKeyHelper(maxNode.key, rootNode.left);
-            } else {
-                // 0 or 1 child
-                if (rootNode.left == null) {
-                    rootNode = rootNode.right;
-                } else {
-                    rootNode = rootNode.left;
-                }
+            // 0 or 1 child
+            if (rootNode.left == null) {
+                return rootNode.right;
             }
+            if (rootNode.right == null) {
+                return rootNode.left;
+            }
+
+            // 2 children
+            Node nodeToDelete = rootNode;
+            rootNode = findMax(nodeToDelete.left);
+            rootNode.left = deleteMax(nodeToDelete.left);
+            rootNode.right = nodeToDelete.right;
         }
         return rootNode;
     }
@@ -215,6 +214,14 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return rootNode;
         }
         return findMax(rootNode.right);
+    }
+
+    private Node deleteMax(Node rootNode) {
+        if (rootNode.right == null) {
+            return rootNode.left;
+        }
+        rootNode.right = deleteMax(rootNode.right);
+        return rootNode;
     }
 
     @Override
