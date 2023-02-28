@@ -1,5 +1,6 @@
 package lab9;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -91,7 +92,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
     /**
-     * Inserts the key KEY
+     * Inserts the key.
      * If it is already present, updates value to be VALUE.
      */
     @Override
@@ -117,7 +118,18 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> keysSet = new HashSet<>();
+        dfsForAllKeys(root, keysSet);
+        return keysSet;
+    }
+
+    private void dfsForAllKeys(Node rootNode, Set<K> keysSet) {
+        if (rootNode == null) {
+            return;
+        }
+        keysSet.add(rootNode.key);
+        dfsForAllKeys(rootNode.left, keysSet);
+        dfsForAllKeys(rootNode.right, keysSet);
     }
 
     /**
@@ -127,7 +139,16 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            return null;
+        }
+
+        V valToRemove = get(key);
+        if (valToRemove != null) {
+            root = deleteKeyHelper(key, root);
+            size--;
+        }
+        return valToRemove;
     }
 
     /**
@@ -137,11 +158,67 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      **/
     @Override
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("Null keys are not allowed.");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Null values are not allowed.");
+        }
+
+        V valToRemove = get(key);
+        if (valToRemove != null && valToRemove.equals(value)) {
+            root = deleteKeyHelper(key, root);
+            size--;
+        } else { // if valToRemove is null or does not equal to target value
+            valToRemove = null;
+        }
+        return valToRemove;
+    }
+
+    /**
+     * Helper method to delete a key from BST, but does not return its value.
+     */
+    private Node deleteKeyHelper(K key, Node rootNode) {
+        if (rootNode == null) {
+            return null;
+        }
+
+        int comparison = key.compareTo(rootNode.key);
+        if (comparison < 0) {
+            rootNode = deleteKeyHelper(key, rootNode.left);
+        } else if (comparison > 0) {
+            rootNode = deleteKeyHelper(key, rootNode.right);
+        } else {
+            if (rootNode.left != null && rootNode.right != null) {
+                // 2 children
+                Node maxNode = findMax(rootNode.left);
+                rootNode.key = maxNode.key;
+                rootNode.value = maxNode.value;
+                rootNode.left = deleteKeyHelper(maxNode.key, rootNode.left);
+            } else {
+                // 0 or 1 child
+                if (rootNode.left == null) {
+                    rootNode = rootNode.right;
+                } else {
+                    rootNode = rootNode.left;
+                }
+            }
+        }
+        return rootNode;
+    }
+
+    /**
+     * Returns the node with maximum key in the subtree.
+     */
+    private Node findMax(Node rootNode) {
+        if (rootNode.right == null) {
+            return rootNode;
+        }
+        return findMax(rootNode.right);
     }
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        return keySet().iterator();
     }
 }

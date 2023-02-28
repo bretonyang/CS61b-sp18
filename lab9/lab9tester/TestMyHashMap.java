@@ -81,6 +81,35 @@ public class TestMyHashMap {
         assertTrue(b.containsKey("hi") && b.get("hi") != null);
     }
 
+    // assumes put/containsKey work
+    @Test
+    public void sanityRemoveTest() {
+        MyHashMap<String, Integer> map = new MyHashMap<>();
+
+        assertNull(map.remove("abc"));
+
+        map.put("a", 1);
+        map.put("b", 2);
+        map.remove("a");
+        assertFalse(map.containsKey("a"));
+        assertTrue(map.containsKey("b"));
+        assertEquals(1, map.size());
+        map.remove("b", 2);
+        assertFalse(map.containsKey("b"));
+        assertEquals(0, map.size());
+
+        // key/value remove
+        map.put("a", 1);
+        map.put("b", 2);
+        map.put("c", 3);
+        map.remove("b", 23);
+        assertTrue(map.containsKey("b"));
+        assertEquals(map.size(), 3);
+        map.remove("b", 2);
+        assertFalse(map.containsKey("b"));
+        assertEquals(2, map.size());
+    }
+
     /*
      * Test for general functionality and that the properties of Maps hold.
      */

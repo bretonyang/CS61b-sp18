@@ -1,5 +1,6 @@
 package lab9;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -110,7 +111,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> keysSet = new HashSet<>();
+        for (ArrayMap<K, V> bucket : buckets) {
+            keysSet.addAll(bucket.keySet());
+        }
+        return keysSet;
     }
 
     /* Removes the mapping for the specified key from this map if exists.
@@ -118,7 +123,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * UnsupportedOperationException. */
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            return null;
+        }
+        int bucketNum = hash(key);
+        size -= buckets[bucketNum].size();
+        V removedVal = buckets[bucketNum].remove(key);
+        size += buckets[bucketNum].size();
+        return removedVal;
     }
 
     /* Removes the entry for the specified key only if it is currently mapped to
@@ -126,11 +138,21 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * throw an UnsupportedOperationException.*/
     @Override
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("Null keys are not allowed.");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Null values are not allowed.");
+        }
+        int bucketNum = hash(key);
+        size -= buckets[bucketNum].size();
+        V removedVal = buckets[bucketNum].remove(key, value);
+        size += buckets[bucketNum].size();
+        return removedVal;
     }
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        return keySet().iterator();
     }
 }
