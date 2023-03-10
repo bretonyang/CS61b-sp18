@@ -1,5 +1,7 @@
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -153,6 +155,9 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T peek() {
+        if (size == 0) {
+            throw new NoSuchElementException("Heap is empty");
+        }
         return contents[1].item();
     }
 
@@ -167,11 +172,14 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T removeMin() {
+        if (size == 0) {
+            return null;
+        }
         T minItem = peek();
         swap(size, 1);  // swap last item to the root position
         contents[size] = null;  // To avoid loitering
+        sink(1);  // sink the root AFTER we've nulled the last position
         size--;
-        sink(1);  // sink the root AFTER we've nulled the last position and decrease size
         return minItem;
     }
 
@@ -194,7 +202,18 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public void changePriority(T item, double priority) {
-        return;
+        int targetIndex;
+        for (targetIndex = 1; targetIndex <= size; targetIndex++) {
+            if (contents[targetIndex].item().equals(item)) {
+                break;
+            }
+        }
+        if (targetIndex == size + 1) {
+            throw new NoSuchElementException("Item was not found in heap.");
+        }
+        contents[targetIndex].myPriority = priority;
+        swim(targetIndex);
+        sink(targetIndex);
     }
 
     /**
