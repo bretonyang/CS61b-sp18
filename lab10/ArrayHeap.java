@@ -177,9 +177,9 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         }
         T minItem = peek();
         swap(size, 1);  // swap last item to the root position
-        contents[size] = null;  // To avoid loitering
-        sink(1);  // sink the root AFTER we've nulled the last position
         size--;
+        contents[size + 1] = null;  // To avoid loitering
+        sink(1);  // sink the root AFTER we've nulled the last position
         return minItem;
     }
 
