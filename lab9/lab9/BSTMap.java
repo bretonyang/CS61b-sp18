@@ -185,9 +185,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
         int comparison = key.compareTo(rootNode.key);
         if (comparison < 0) {
-            rootNode = deleteKeyHelper(key, rootNode.left);
+            rootNode.left = deleteKeyHelper(key, rootNode.left);
         } else if (comparison > 0) {
-            rootNode = deleteKeyHelper(key, rootNode.right);
+            rootNode.right = deleteKeyHelper(key, rootNode.right);
         } else {
             // 0 or 1 child
             if (rootNode.left == null) {
