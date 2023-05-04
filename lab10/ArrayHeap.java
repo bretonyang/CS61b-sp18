@@ -122,7 +122,9 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
 
         // Note that if leftIndex is still in range, then we need to consider it!
         while (leftIndex(index) <= size) {
-            int minChildIndex = leftIndex(index) == size ? leftIndex(index) : min(leftIndex(index), rightIndex(index));
+            int minChildIndex = leftIndex(index) == size
+                    ? leftIndex(index)
+                    : min(leftIndex(index), rightIndex(index));
             if (min(index, minChildIndex) == index) {
                 break; // in place, done!
             } else {
@@ -177,9 +179,10 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         }
         T minItem = peek();
         swap(size, 1);  // swap last item to the root position
-        size--;
-        contents[size + 1] = null;  // To avoid loitering
-        sink(1);  // sink the root AFTER we've nulled the last position
+        contents[size--] = null; // avoid loitering
+        if (size > 0) {
+            sink(1);  // sink the root AFTER we've nulled the last position
+        }
         return minItem;
     }
 
