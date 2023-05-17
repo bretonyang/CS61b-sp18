@@ -343,7 +343,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     @Test
     public void testSink() {
         ArrayHeap<String> pq = new ArrayHeap<>();
-        
         pq.size = 7;
         for (int i = 1; i <= 7; i += 1) {
             pq.contents[i] = new ArrayHeap<String>.Node("x" + i, i);
