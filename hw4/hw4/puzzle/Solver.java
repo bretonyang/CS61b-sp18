@@ -13,7 +13,7 @@ public class Solver {
         private final int h; // heuristic value
         private final SearchNode parent;
 
-        public SearchNode(WorldState state, int moves, int h, SearchNode parent) {
+        SearchNode(WorldState state, int moves, int h, SearchNode parent) {
             this.state = state;
             this.moves = moves;
             this.h = h;

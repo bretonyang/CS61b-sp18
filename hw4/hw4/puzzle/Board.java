@@ -1,7 +1,5 @@
 package hw4.puzzle;
 
-import edu.princeton.cs.algs4.Queue;
-
 import java.util.ArrayList;
 
 public class Board implements WorldState {
@@ -46,14 +44,14 @@ public class Board implements WorldState {
     @Override
     public Iterable<WorldState> neighbors() {
         ArrayList<WorldState> neighbors = new ArrayList<>();
-        int Bi = 0, Bj = 0;
+        int row = 0, col = 0;
         int[][] tmpTiles = new int[N][N];
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 tmpTiles[i][j] = tiles[i][j];
                 if (tiles[i][j] == 0) {
-                    Bi = i;
-                    Bj = j;
+                    row = i;
+                    col = j;
                 }
             }
         }
@@ -61,14 +59,14 @@ public class Board implements WorldState {
         int[] dx = new int[]{-1, 0, 0, 1};
         int[] dy = new int[]{0, -1, 1, 0};
         for (int i = 0; i < 4; i++) {
-            int newBi = Bi + dx[i];
-            int newBj = Bj + dy[i];
-            if (!invalidIndex(newBi, newBj)) {
-                tmpTiles[Bi][Bj] = tmpTiles[newBi][newBj];
-                tmpTiles[newBi][newBj] = 0;
+            int newrow = row + dx[i];
+            int newcol = col + dy[i];
+            if (!invalidIndex(newrow, newcol)) {
+                tmpTiles[row][col] = tmpTiles[newrow][newcol];
+                tmpTiles[newrow][newcol] = 0;
                 neighbors.add(new Board(tmpTiles));
-                tmpTiles[newBi][newBj] = tmpTiles[Bi][Bj];
-                tmpTiles[Bi][Bj] = 0;
+                tmpTiles[newrow][newcol] = tmpTiles[row][col];
+                tmpTiles[row][col] = 0;
             }
         }
         return neighbors;
@@ -129,6 +127,9 @@ public class Board implements WorldState {
             return false;
         }
         Board other = (Board) o;
+        if (other.size() != size()) {
+            return false;
+        }
         for (int i = 0; i < size(); i++) {
             for (int j = 0; j < size(); j++) {
                 if (tileAt(i, j) != other.tileAt(i, j)) {
@@ -139,15 +140,26 @@ public class Board implements WorldState {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        for (int i = 0; i < size(); i++) {
+            for (int j = 0; j < size(); j++) {
+                hash = ((hash << 5) + hash) + tileAt(i, j);
+            }
+        }
+        return hash;
+    }
+
     /**
      * Returns the string representation of the board.
      */
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int N = size();
-        s.append(N + "\n");
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
+        int m = size();
+        s.append(m + "\n");
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
                 s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
