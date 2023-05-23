@@ -3,10 +3,10 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
+    private Map<Long, Node> nodes = new HashMap<>();
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -57,7 +58,15 @@ public class GraphDB {
      *  we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        // TODO: Your code here.
+        Set<Long> nodesToRemove = new HashSet<>();
+        for (long v : vertices()) {
+            if (nodes.get(v).neighbors.isEmpty()) {
+                nodesToRemove.add(v);
+            }
+        }
+        for (long v : nodesToRemove) {
+            nodes.remove(v);
+        }
     }
 
     /**
@@ -66,7 +75,7 @@ public class GraphDB {
      */
     Iterable<Long> vertices() {
         //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodes.keySet();
     }
 
     /**
@@ -75,7 +84,10 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        if (!nodes.containsKey(v)) {
+            throw new NoSuchElementException("Node v is not in graph!");
+        }
+        return nodes.get(v).neighbors;
     }
 
     /**
@@ -136,7 +148,16 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        long closestNode = -1;
+        double closestDist = Double.POSITIVE_INFINITY;
+        for (long v : vertices()) {
+            double dist = distance(lon(v), lat(v), lon, lat);
+            if (dist < closestDist) {
+                closestDist = dist;
+                closestNode = v;
+            }
+        }
+        return closestNode;
     }
 
     /**
@@ -145,7 +166,10 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        if (!nodes.containsKey(v)) {
+            throw new NoSuchElementException("Node v is not in graph!");
+        }
+        return nodes.get(v).lon;
     }
 
     /**
@@ -154,6 +178,33 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        if (!nodes.containsKey(v)) {
+            throw new NoSuchElementException("Node v is not in graph!");
+        }
+        return nodes.get(v).lat;
     }
+
+    /* Helper Methods */
+    void addNode(long id, double lon, double lat) {
+        Node n = new Node(id, lon, lat);
+        nodes.put(id, n);
+    }
+    void addEdge(long v, long w) {
+        nodes.get(v).neighbors.add(w);
+        nodes.get(w).neighbors.add(v);
+    }
+
+    static class Node {
+        private long id;
+        private double lon;
+        private double lat;
+        private LinkedList<Long> neighbors;
+        Node(long id, double lon, double lat) {
+            this.id = id;
+            this.lon = lon;
+            this.lat = lat;
+            neighbors = new LinkedList<>();
+        }
+    }
+
 }
