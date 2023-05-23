@@ -19,6 +19,9 @@ import java.util.regex.Pattern;
  * down to the priority you use to order your vertices.
  */
 public class Router {
+
+    private static boolean found;
+
     /**
      * Return a List of longs representing the shortest path from the node
      * closest to a start location and the node closest to the destination
@@ -35,13 +38,18 @@ public class Router {
                                           double destlon, double destlat) {
         long start = g.closest(stlon, stlat);
         long dest = g.closest(destlon, destlat);
+
+        found = false;
         Map<Long, Long> edgeTo = astar(g, start, dest);
+        
         List<Long> spt = new LinkedList<>();
-        for (long cur = dest; cur != start; cur = edgeTo.get(cur)) {
-            spt.add(cur);
+        if (found) {
+            for (long cur = dest; cur != start; cur = edgeTo.get(cur)) {
+                spt.add(cur);
+            }
+            spt.add(start);
+            Collections.reverse(spt);
         }
-        spt.add(start);
-        Collections.reverse(spt);
         return spt;
     }
 
@@ -59,6 +67,7 @@ public class Router {
                 continue;
             }
             if (v == target) {
+                found = true;
                 break;
             }
             marked.add(v);
