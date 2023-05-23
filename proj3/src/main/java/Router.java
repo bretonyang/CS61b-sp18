@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +24,65 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        long start = g.closest(stlon, stlat);
+        long dest = g.closest(destlon, destlat);
+        Map<Long, Long> edgeTo = astar(g, start, dest);
+        List<Long> spt = new LinkedList<>();
+        for (long cur = dest; cur != start; cur = edgeTo.get(cur)) {
+            spt.add(cur);
+        }
+        spt.add(start);
+        Collections.reverse(spt);
+        return spt;
+    }
+
+    private static Map<Long, Long> astar(GraphDB graph, long src, long target) {
+        Map<Long, Long> edgeTo = new HashMap<>();
+        Map<Long, Double> distTo = new HashMap<>();
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        Set<Long> marked = new HashSet<>();
+        edgeTo.put(src, src);
+        distTo.put(src, 0.0);
+        pq.add(new Node(src, graph.distance(src, target)));
+        while (!pq.isEmpty()) {
+            long v = pq.poll().id;
+            if (marked.contains(v)) {
+                continue;
+            }
+            if (v == target) {
+                break;
+            }
+            marked.add(v);
+            for (long w : graph.adjacent(v)) {
+                double curDist = distTo.get(v) + graph.distance(v, w);
+                if (distTo.get(w) == null || curDist < distTo.get(w)) {
+                    distTo.put(w, curDist);
+                    edgeTo.put(w, v);
+                    pq.add(new Node(w, curDist + graph.distance(w, target)));
+                }
+            }
+        }
+        return edgeTo;
+    }
+
+    private static class Node implements Comparable<Node> {
+        private final long id;
+        private final double priority;
+        Node(long id, double priority) {
+            this.id = id;
+            this.priority = priority;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            if (priority < o.priority) {
+                return -1;
+            }
+            else if (priority > o.priority) {
+                return 1;
+            }
+            return 0;
+        }
     }
 
     /**
