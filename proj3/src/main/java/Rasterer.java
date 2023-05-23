@@ -42,11 +42,113 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-         System.out.println(params);
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+
+        // query failed
+        if (!validateParams(params)) {
+            results.put("query_success", false);
+            // put arbitrary values to other fields
+            results.put("depth", -1);
+            results.put("raster_ul_lon", -1);
+            results.put("raster_ul_lat", -1);
+            results.put("raster_lr_lon", -1);
+            results.put("raster_lr_lat", -1);
+            results.put("render_grid", null);
+            return results;
+        }
+        // query success
+        results.put("query_success", true);
+
+        int depth = calcDepth(params);
+        results.put("depth", depth);
+
+        // get the (x, y) for bounding box upper-left tile and lower-right tile.
+        int ulX = calcUlX(depth, params);
+        int ulY = calcUlY(depth, params);
+        int lrX = calcLrX(depth, params);
+        int lrY = calcLrY(depth, params);
+        // Record the files
+        String[][] files = new String[lrY - ulY + 1][lrX - ulX + 1];
+        for (int row = ulY; row <= lrY; row++) {
+            for (int col = ulX; col <= lrX; col++) {
+                files[row - ulY][col - ulX] = "d" + depth + "_x" + col + "_y" + row + ".png";
+            }
+        }
+        results.put("render_grid", files);
+
+        // Record the ullon, ullat, lrlon, lrlat for the bounding box
+        double lonPT = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / Math.pow(2, depth);
+        double latPT = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / Math.pow(2, depth);
+        results.put("raster_ul_lon", MapServer.ROOT_ULLON + ulX * lonPT);
+        results.put("raster_ul_lat", MapServer.ROOT_ULLAT - ulY * latPT);
+        results.put("raster_lr_lon", MapServer.ROOT_ULLON + (lrX + 1) * lonPT);
+        results.put("raster_lr_lat", MapServer.ROOT_ULLAT - (lrY + 1) * latPT);
         return results;
+    }
+
+    private int calcUlX(int d, Map<String, Double> params) {
+        double ullon = params.get("ullon");
+        if (ullon < MapServer.ROOT_ULLON) {
+            return 0;
+        }
+        double lonPT = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / Math.pow(2, d);
+        return (int) ((ullon - MapServer.ROOT_ULLON) / lonPT);
+    }
+    private int calcUlY(int d, Map<String, Double> params) {
+        double ullat = params.get("ullat");
+        if (ullat > MapServer.ROOT_ULLAT) {
+            return 0;
+        }
+        double latPT = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / Math.pow(2, d);
+        return (int) ((MapServer.ROOT_ULLAT - ullat) / latPT);
+    }
+    private int calcLrX(int d, Map<String, Double> params) {
+        double lrlon = params.get("lrlon");
+        if (lrlon > MapServer.ROOT_LRLON) {
+            return (int) (Math.pow(2, d) - 1);
+        }
+        double lonPT = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / Math.pow(2, d);
+        return (int) ((lrlon - MapServer.ROOT_ULLON) / lonPT);
+    }
+    private int calcLrY(int d, Map<String, Double> params) {
+        double lrlat = params.get("lrlat");
+        if (lrlat < MapServer.ROOT_LRLAT) {
+            return (int) (Math.pow(2, d) - 1);
+        }
+        double latPT = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / Math.pow(2, d);
+        return (int) ((MapServer.ROOT_ULLAT - lrlat) / latPT);
+    }
+
+    /**
+     * Calculates the desired depth. If depth > 7, just return 7.
+     */
+    private int calcDepth(Map<String, Double> params) {
+        double userLonDPP = (params.get("lrlon") - params.get("ullon")) / params.get("w");
+        int depth = (int) Math.ceil(
+                Math.log((MapServer.ROOT_LRLON - MapServer.ROOT_ULLON)
+                        / (MapServer.TILE_SIZE * userLonDPP))
+                / Math.log(2));
+        return Math.min(depth, 7);
+    }
+
+    /**
+     * Returns true if params is valid, false otherwise.
+     */
+    private boolean validateParams(Map<String, Double> params) {
+        double ullon = params.get("ullon");
+        double ullat = params.get("ullat");
+        double lrlon = params.get("lrlon");
+        double lrlat = params.get("lrlat");
+        // Check if QB doesn't make sense.
+        if (ullon >= lrlon || ullat <= lrlat) {
+            return false;
+        }
+        // check if QB is completely outside of ROOT
+        if (lrlon <= MapServer.ROOT_ULLON || ullon >= MapServer.ROOT_LRLON
+            || lrlat >= MapServer.ROOT_ULLAT || ullat <= MapServer.ROOT_LRLAT) {
+            return false;
+        }
+        return true;
     }
 
 }
