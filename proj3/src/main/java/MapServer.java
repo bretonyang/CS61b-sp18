@@ -298,7 +298,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return graph.locationsWithPrefix(prefix);
+        return graph.getLocationsByPrefix(prefix);
     }
 
     /**

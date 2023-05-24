@@ -80,7 +80,7 @@ public class GraphDB {
         trie.addWord(cleanWord, word);
     }
 
-    List<String> locationsWithPrefix(String key) {
+    List<String> getLocationsByPrefix(String key) {
         return trie.wordsWithPrefix(cleanString(key));
     }
 
