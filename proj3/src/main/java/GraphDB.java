@@ -29,7 +29,11 @@ public class GraphDB {
      * Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc.
      */
+
+    // Maps from an id to a node
     private Map<Long, Node> nodes = new HashMap<>();
+    // Maps from an edge (v, w) to its way name. Note that Pair is asymmetric.
+    private Map<Pair, String> edges = new HashMap<>();
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -132,7 +136,9 @@ public class GraphDB {
      * Returns the initial bearing (angle) between vertices v and w in degrees.
      * The initial bearing is the angle that, if followed in a straight line
      * along a great-circle arc from the starting point, would take you to the
-     * end point.
+     * end point. In other words, the initial bearing is the angle between the
+     * direction to North and the direction along path (v, w). And the angle is
+     * increased in clockwise direction.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
      *
@@ -202,21 +208,38 @@ public class GraphDB {
         return nodes.get(v).lat;
     }
 
+    /**
+     * Gets the name of the edge between (v, w).
+     *
+     * @param v id of first vertex
+     * @param w id of second vertex
+     * @return edge name of (v, w)
+     */
+    String getEdgeName(long v, long w) {
+        Pair key = new Pair(v, w);
+        if (!edges.containsKey(key)) {
+            throw new NoSuchElementException("Edge (v, w) does not exist");
+        }
+        return edges.get(key);
+    }
+
     /* Helper Methods */
     void addNode(long id, double lon, double lat) {
         Node n = new Node(id, lon, lat);
         nodes.put(id, n);
     }
 
-    void addEdge(long v, long w) {
+    void addEdge(long v, long w, String name) {
         nodes.get(v).neighbors.add(w);
         nodes.get(w).neighbors.add(v);
+        edges.put(new Pair(v, w), name);
+        edges.put(new Pair(w, v), name);
     }
 
-    static class Node {
-        private long id;
-        private double lon;
-        private double lat;
+    private static class Node {
+        private final long id;
+        private final double lon;
+        private final double lat;
         private LinkedList<Long> neighbors;
 
         Node(long id, double lon, double lat) {
@@ -224,6 +247,37 @@ public class GraphDB {
             this.lon = lon;
             this.lat = lat;
             neighbors = new LinkedList<>();
+        }
+    }
+
+    private static class Pair {
+        private final long v;
+        private final long w;
+
+        Pair(long v, long w) {
+            this.v = v;
+            this.w = w;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            Pair other = (Pair) obj;
+            return v == other.v && w == other.w;
+        }
+
+        @Override
+        public int hashCode() {
+            /// This hashCode algo is from "Effective Java"
+            int result = 1;
+            result = 31 * result + (int) (v ^ (v >>> 32));
+            result = 31 * result + (int) (w ^ (w >>> 32));
+            return result;
         }
     }
 

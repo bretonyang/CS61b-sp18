@@ -41,6 +41,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     private String activeState = "";
     private LinkedList<Long> potentialWay = new LinkedList<>();
     private boolean isValidWay = false;
+    private String wayName = null;
     private final GraphDB g;
 
     /**
@@ -117,7 +118,7 @@ public class GraphBuildingHandler extends DefaultHandler {
                 }
             } else if (k.equals("name")) {
                 //System.out.println("Way Name: " + v);
-                int dummy;
+                wayName = v;
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
@@ -153,10 +154,11 @@ public class GraphBuildingHandler extends DefaultHandler {
             if (isValidWay) {
                 long v = potentialWay.removeFirst();
                 for (long w : potentialWay) {
-                    g.addEdge(v, w);
+                    g.addEdge(v, w, wayName);
                     v = w;
                 }
             }
+            wayName = null;
             potentialWay.clear();
             isValidWay = false;
         }

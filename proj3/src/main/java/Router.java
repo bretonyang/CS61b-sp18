@@ -1,12 +1,15 @@
+
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.PriorityQueue;
 import java.util.Objects;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +44,7 @@ public class Router {
 
         found = false;
         Map<Long, Long> edgeTo = astar(g, start, dest);
-        
+
         List<Long> spt = new LinkedList<>();
         if (found) {
             for (long cur = dest; cur != start; cur = edgeTo.get(cur)) {
@@ -56,11 +59,13 @@ public class Router {
     private static Map<Long, Long> astar(GraphDB graph, long src, long target) {
         Map<Long, Long> edgeTo = new HashMap<>();
         Map<Long, Double> distTo = new HashMap<>();
-        PriorityQueue<Node> pq = new PriorityQueue<>();
+        PriorityQueue<PQNode> pq = new PriorityQueue<>();
         Set<Long> marked = new HashSet<>();
+
         edgeTo.put(src, src);
         distTo.put(src, 0.0);
-        pq.add(new Node(src, graph.distance(src, target)));
+        pq.add(new PQNode(src, graph.distance(src, target)));
+
         while (!pq.isEmpty()) {
             long v = pq.poll().id;
             if (marked.contains(v)) {
@@ -70,30 +75,31 @@ public class Router {
                 found = true;
                 break;
             }
+
             marked.add(v);
             for (long w : graph.adjacent(v)) {
                 double curDist = distTo.get(v) + graph.distance(v, w);
                 if (distTo.get(w) == null || curDist < distTo.get(w)) {
                     distTo.put(w, curDist);
                     edgeTo.put(w, v);
-                    pq.add(new Node(w, curDist + graph.distance(w, target)));
+                    pq.add(new PQNode(w, curDist + graph.distance(w, target)));
                 }
             }
         }
         return edgeTo;
     }
 
-    private static class Node implements Comparable<Node> {
+    private static class PQNode implements Comparable<PQNode> {
         private final long id;
         private final double priority;
 
-        Node(long id, double priority) {
+        PQNode(long id, double priority) {
             this.id = id;
             this.priority = priority;
         }
 
         @Override
-        public int compareTo(Node o) {
+        public int compareTo(PQNode o) {
             if (priority < o.priority) {
                 return -1;
             } else if (priority > o.priority) {
@@ -109,13 +115,60 @@ public class Router {
      * @param g     The graph to use.
      * @param route The route to translate into directions. Each element
      *              corresponds to a node from the graph in the route.
-     * @return A list of NavigatiionDirection objects corresponding to the input
+     * @return A list of NavigationDirection objects corresponding to the input
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        // Edge case: return empty list if no edges in route
+        if (route.size() < 2) {
+            return new LinkedList<>();
+        }
+
+        // Normal case: at least 2 vertices in route
+
+        // convert List to ArrayList for constant time get() method
+        ArrayList<Long> arrayRoute = new ArrayList<>(route);
+        List<NavigationDirection> result = new LinkedList<>();
+
+        // create the starting navigation (current navigation)
+        NavigationDirection curNav = new NavigationDirection();
+        curNav.direction = NavigationDirection.START;
+        curNav.way = getWay(g, arrayRoute.get(0), arrayRoute.get(1));
+        curNav.distance += g.distance(arrayRoute.get(0), arrayRoute.get(1));
+
+        // Iterate through the route, keeping track of the prev, cur, and next nodes.
+        for (int i = 1; i < arrayRoute.size() - 1; i++) {
+            long prevNode = arrayRoute.get(i - 1);
+            long curNode = arrayRoute.get(i);
+            long nextNode = arrayRoute.get(i + 1);
+            // Note: curWay is (prev, cur) and nextWay is (cur, next)
+            String nextWay = getWay(g, curNode, nextNode);
+
+            if (!curNav.way.equals(nextWay)) {
+                result.add(curNav);
+                curNav = new NavigationDirection();
+                curNav.way = nextWay;
+                curNav.distance = g.distance(curNode, nextNode);
+
+                // Calculate bearings for (prev, cur) and (cur, next) ways.
+                double curBearing = g.bearing(prevNode, curNode);
+                double nextBearing = g.bearing(curNode, nextNode);
+                curNav.direction = NavigationDirection.getDirection(curBearing, nextBearing);
+            } else {
+                curNav.distance += g.distance(curNode, nextNode);
+            }
+        }
+
+        // Add last way to target
+        result.add(curNav);
+        return result;
     }
 
+    private static String getWay(GraphDB g, long v, long w) {
+        String way = g.getEdgeName(v, w);
+//        return way == null ? NavigationDirection.UNKNOWN_ROAD : way;
+        return way == null ? "" : way; // Somehow the AG requires "" instead of UNKNOWN_ROAD
+    }
 
     /**
      * Class to represent a navigation direction, which consists of 3 attributes:
@@ -182,6 +235,43 @@ public class Router {
             this.direction = STRAIGHT;
             this.way = UNKNOWN_ROAD;
             this.distance = 0.0;
+        }
+
+        private static int getDirection(double curBearing, double nextBearing) {
+            // phi is the directed angle from current path to next path.
+            // (clockwise direction is positive, which means a right turn)
+            // The below calculation might not be correct for some edge cases,
+            // so we need to fix it by the following if statements.
+            double phi = nextBearing - curBearing;
+
+            // Transform edge case angles into angle directed clockwise from direction
+            // of current path to next path.
+            // See Notability proj3 notes for more detail.
+            if (phi < -180) {
+                phi += 360;
+            } else if (phi > 180) {
+                phi -= 360;
+            }
+
+            if (phi < -100) {
+                return SHARP_LEFT;
+            } else if (phi < -30) {
+                return LEFT;
+            } else if (phi < -15) {
+                return SLIGHT_LEFT;
+            } else if (phi < 15) {
+                return STRAIGHT;
+            } else if (phi < 30) {
+                return SLIGHT_RIGHT;
+            } else if (phi < 100) {
+                return RIGHT;
+            } else {
+                return SHARP_RIGHT;
+            }
+        }
+
+        private static boolean isRight(double cur, double next) {
+            return false;
         }
 
         public String toString() {
