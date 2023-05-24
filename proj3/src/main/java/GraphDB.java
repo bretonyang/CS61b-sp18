@@ -4,12 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.NoSuchElementException;
-import java.util.LinkedList;
+import java.util.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -34,6 +29,10 @@ public class GraphDB {
     private Map<Long, Node> nodes = new HashMap<>();
     // Maps from an edge (v, w) to its way name. Note that Pair is asymmetric.
     private Map<Pair, String> edges = new HashMap<>();
+    // Trie for auto complete
+    private Trie trie = new Trie();
+    // Maps from a "cleaned" name to a list of locations
+    private Map<String, List<Location>> locationsByName = new HashMap<>();
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -57,8 +56,37 @@ public class GraphDB {
         clean();
     }
 
+    void addLocation(long id, double lon, double lat, String name) {
+        String cleanedName = cleanString(name);
+        if (!locationsByName.containsKey(cleanedName)) {
+            locationsByName.put(cleanedName, new LinkedList<>());
+        }
+        locationsByName.get(cleanedName).add(new Location(id, lon, lat, name));
+    }
+
+    List<Map<String, Object>> getLocations(String name) {
+        name = cleanString(name);
+        List<Map<String, Object>> result = new LinkedList<>();
+        if (locationsByName.containsKey(name)) {
+            for (Location location : locationsByName.get(name)) {
+                result.add(location.getMap());
+            }
+        }
+        return result;
+    }
+
+    void addWordToTrie(String word) {
+        String cleanWord = cleanString(word);
+        trie.addWord(cleanWord, word);
+    }
+
+    List<String> locationsWithPrefix(String key) {
+        return trie.wordsWithPrefix(cleanString(key));
+    }
+
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
+     * The original string is not modified.
      *
      * @param s Input string.
      * @return Cleaned string.
@@ -278,6 +306,22 @@ public class GraphDB {
             result = 31 * result + (int) (v ^ (v >>> 32));
             result = 31 * result + (int) (w ^ (w >>> 32));
             return result;
+        }
+    }
+
+    static class Location {
+        private Map<String, Object> info;
+
+        Location(long id, double lon, double lat, String name) {
+            info = new HashMap<>();
+            info.put("id", id);
+            info.put("lon", lon);
+            info.put("lat", lat);
+            info.put("name", name);
+        }
+
+        public Map<String, Object> getMap() {
+            return info;
         }
     }
 

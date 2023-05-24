@@ -42,6 +42,9 @@ public class GraphBuildingHandler extends DefaultHandler {
     private LinkedList<Long> potentialWay = new LinkedList<>();
     private boolean isValidWay = false;
     private String wayName = null;
+    private long curID;
+    private double curLon;
+    private double curLat;
     private final GraphDB g;
 
     /**
@@ -81,10 +84,10 @@ public class GraphBuildingHandler extends DefaultHandler {
 
             /* TODO Use the above information to save a "node" to somewhere. */
             /* Hint: A graph-like structure would be nice. */
-            long id = Long.parseLong(attributes.getValue("id"));
-            double lon = Double.parseDouble(attributes.getValue("lon"));
-            double lat = Double.parseDouble(attributes.getValue("lat"));
-            g.addNode(id, lon, lat);
+            curID = Long.parseLong(attributes.getValue("id"));
+            curLon = Double.parseDouble(attributes.getValue("lon"));
+            curLat = Double.parseDouble(attributes.getValue("lat"));
+            g.addNode(curID, curLon, curLat);
         } else if (qName.equals("way")) {
             /* We encountered a new <way...> tag. */
             activeState = "way";
@@ -129,7 +132,9 @@ public class GraphBuildingHandler extends DefaultHandler {
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */
 //            System.out.println("Node's name: " + attributes.getValue("v"));
-            int dummy;
+            String name = attributes.getValue("v");
+            g.addWordToTrie(name);
+            g.addLocation(curID, curLon, curLat, name);
         }
     }
 
