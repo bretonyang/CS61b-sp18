@@ -104,7 +104,16 @@ public class MapServer {
         rasterer = new Rasterer();
     }
 
+    private static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+    }
+
     public static void main(String[] args) {
+//        port(getHerokuAssignedPort());
         initialize();
         staticFileLocation("/page");
         /* Allow for all origin requests (since this is not an authenticated server, we do not
@@ -275,6 +284,7 @@ public class MapServer {
             try {
                 File in = new File(imgPath);
                 tileImg = ImageIO.read(in);
+//                tileImg = ImageIO.read(Thread.currentThread().getContextClassLoader().getResource(imgPath));
             } catch (IOException | NullPointerException e) {
                 e.printStackTrace();
             }
